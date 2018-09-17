@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+<div class="cont">
+    <div class="demo">
+        <div class="login">
+            <div class="signup__form">
+                <div class="login__row">
+                    <svg class="login__icon username svg-icon" viewBox="0 0 20 20">
+                        <path d="M0,20 a10,8 0 0,1 20,0z M10,0 a4,4 0 0,1 0,8 a4,4 0 0,1 0,-8"/>
+                    </svg>
+                    <input id="username" type="text" class="login__input username" placeholder="Username" required/>
+                </div>
+                <div class="login__row">
+                    <svg class="login__icon location svg-icon" viewBox="0 0 20 20">
+                        <path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12 ,2Z"></path>
+                    </svg>
+                    <input id='location' type="text" class="login__input location" placeholder="Location" required/>
+                </div>
+                <button type="button" id="register_btn" class="login__submit" onclick="registerUser()">
+                    Register
+                </button>
+                <p class="login__signup">Back to &nbsp;<a href="view.html">Home</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    function registerUser() {
+        var city = document.getElementById('location').value;
+        var name = document.getElementById('username').value;
+
+        if (city == '' || name == '') {
+            displayNotification('Error!', 'Values cannot be empty');
+            return
+        }
+
+        var mysql = require('mysql');
+        var config = require("./db-config");
+
+        // Add the credentials to access your database
+        var connection = mysql.createConnection(config.db);
+
+        // connect to mysql
+        connection.connect(function (err) {
+            // in case of error
+            if (err) {
+                console.log(err.code);
+                console.log(err.fatal);
+            }
+        });
+
+        // Perform a query
+
+        $query = 'INSERT INTO user_profile(display_name, city) VALUES ("' + name + '", "' + city + '");';
+
+        connection.query($query, function (err, rows, fields) {
+            if (err) {
+                console.log("An error occurred performing the query.");
+                console.log(err);
+                return;
+            }
+
+            console.log("Query successfully executed");
+        });
+
+        // Close the connection
+        connection.end(function () {
+            // The connection has been closed
+        });
+
+        // display notification
+        displayNotification('Done!', 'New user registered successfully');
+    }
+
+    function displayNotification(titleValue, notificationValue) {
+        const notification = {
+            title: titleValue,
+            body: notificationValue
+        }
+
+        const myNotification = new window.Notification(notification.title, notification)
+    }
+</script>
+</body>
+</html>
